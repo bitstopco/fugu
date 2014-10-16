@@ -56,7 +56,7 @@
 				print 'Exception : '.$e->getMessage();
 			}
 
-			$response[] = array(
+			$response = array(
         'status' => $status
       );
 
@@ -88,7 +88,7 @@
 				print 'Exception : '.$e->getMessage();
 			}
 
-			$response[] = array(
+			$response = array(
         'status' => $status,
         'phone' => $phone
       );

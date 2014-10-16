@@ -42,6 +42,9 @@
 		function create()
 		{
 
+			header('Access-Control-Allow-Origin: *');
+  		header('Content-type: application/json;');
+
 			try {
 				$phone = $_GET['phone'];
 				$db = new PDO('sqlite:phone.sqlite');
@@ -63,6 +66,9 @@
 
 		function recover()
 		{
+
+			header('Access-Control-Allow-Origin: *');
+  		header('Content-type: application/json;');
 			
 			try {
 

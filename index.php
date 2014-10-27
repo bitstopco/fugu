@@ -22,6 +22,12 @@
 
     });
 
+    $app->group('/coinbase', function () use ($app) {
+
+    	$app->get('/address', 'COINBASE:address');
+
+    });
+
   });
 
   $app->contentType('application/json');
@@ -99,5 +105,40 @@
 
 	}  	
 
+
+	/**
+	* COINBASE
+	*/
+	class COINBASE
+	{
+		
+		function address()
+		{
+			header('Access-Control-Allow-Origin: *');
+  		header('Content-type: application/json;');
+
+  		try {
+  			$db = new PDO('sqlite:address.sqlite');
+
+  			$status = '200';
+  			$address = '1NppaKfbVPpqmqtHMHoNch72bv1ArKdNL5';
+
+  			$response = array(
+        	'status' => $status,
+        	'address' => $address
+      	);
+
+  		} catch (PDOException $e) {
+				$status = '500';
+
+				$response = array(
+        	'status' => $status,
+        	'error' => $e->getMessage()
+      	);
+			}
+
+			echo json_encode($response);
+		}
+	}
 	
 ?>

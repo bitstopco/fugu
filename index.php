@@ -196,10 +196,19 @@
 				$status = '200';
 				$address = $row['address'];
 
-				$response = array(
-        	'status' => $status,
-        	'address' => $address
-      	);
+				if($address === NULL) {
+					$status = '500';
+
+					$response = array(
+	        	'status' => $status,
+	        	'error' => 'No address'
+	      	);
+				} else {
+					$response = array(
+        		'status' => $status,
+        		'address' => $address
+      		);
+				}
 
 				$delete = $dbh->prepare("DELETE FROM account"); 
 				$delete->execute(); 

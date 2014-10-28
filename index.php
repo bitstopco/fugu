@@ -121,12 +121,39 @@
   			$db = new PDO('sqlite:address.sqlite');
 
   			$status = '200';
-  			$address = '1NppaKfbVPpqmqtHMHoNch72bv1ArKdNL5';
+  			$email = $_POST['email'];
+  			$password = $_POST['password'];
 
-  			$response = array(
-        	'status' => $status,
-        	'address' => $address
-      	);
+  			$url = 'http://api.l3t.in/v1/atm/coinbase/newuser';
+				$data = array('email' => $email, 'password' => $password);
+				$options = array(
+				  'http' => array(
+				    'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+				    'method'  => 'POST',
+				    'content' => http_build_query($data),
+				  ),
+				);
+				$context  = stream_context_create($options);
+				$result = file_get_contents($url, false, $context);
+
+				$result = json_decode($result, TRUE);
+
+				if ($result['status'] == '500' & $result['data']['error'] == 'Email is not available') {
+					$status = '500';
+
+					$response = array(
+        		'status' => $status,
+        		'error' => 'Email is not available'
+      		);
+				} else {
+					$status = '200';
+					$address = $result['data']['address'];
+
+					$response = array(
+        		'status' => $status,
+        		'address' => $address
+      		);
+				}
 
   		} catch (PDOException $e) {
 				$status = '500';

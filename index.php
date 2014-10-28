@@ -24,6 +24,7 @@
 
     $app->group('/coinbase', function () use ($app) {
 
+    	$app->post('/create', 'COINBASE:create');
     	$app->get('/address', 'COINBASE:address');
 
     });
@@ -112,14 +113,13 @@
 	class COINBASE
 	{
 		
-		function address()
+		function create()
 		{
 			header('Access-Control-Allow-Origin: *');
   		header('Content-type: application/json;');
 
   		try {
-  			$db = new PDO('sqlite:address.sqlite');
-
+  			
   			$status = '200';
   			$email = $_POST['email'];
   			$password = $_POST['password'];
@@ -138,20 +138,35 @@
 
 				$result = json_decode($result, TRUE);
 
-				if ($result['status'] == '500' & $result['data']['error'] == 'Email is not available') {
-					$status = '500';
-
-					$response = array(
-        		'status' => $status,
-        		'error' => 'Email is not available'
-      		);
-				} else {
+				if ($result['status'] == '200') {
+					$dbh = new PDO('sqlite:coinbase.sqlite');
 					$status = '200';
 					$address = $result['data']['address'];
+
+					$dbh->exec("CREATE TABLE account (Id INTEGER PRIMARY KEY, address TEXT)");   
+					$stmt = $dbh->prepare("INSERT INTO account (address) VALUES (?)");
+ 					$stmt->bindParam(1, $address);
+ 					$stmt->execute();
 
 					$response = array(
         		'status' => $status,
         		'address' => $address
+      		);
+				} elseif ($result['status'] == '500') {
+					if ($result['data']['error'] == 'Email is not available') {
+						$status = '500';
+
+						$response = array(
+	        		'status' => $status,
+	        		'error' => 'Email is not available'
+	      		);
+					}
+				} else {
+					$status = '500';
+
+					$response = array(
+        		'status' => $status,
+        		'error' => 'Try again'
       		);
 				}
 
@@ -165,6 +180,40 @@
 			}
 
 			echo json_encode($response);
+		}
+
+		function address()
+		{
+			header('Access-Control-Allow-Origin: *');
+  		header('Content-type: application/json;');
+
+  		try {
+  			$dbh = new PDO('sqlite:coinbase.sqlite'); 
+				$stmt = $dbh->prepare("SELECT address FROM account ORDER BY Id DESC LIMIT 1"); 
+				$stmt->execute(); 
+				$row = $stmt->fetch();
+
+				$status = '200';
+				$address = $row['address'];
+
+				$response = array(
+        	'status' => $status,
+        	'address' => $address
+      	);
+
+				$delete = $dbh->prepare("DELETE FROM account"); 
+				$delete->execute(); 
+
+  		} catch (PDOException $e) {
+				$status = '500';
+
+				$response = array(
+        	'status' => $status,
+        	'error' => $e->getMessage()
+      	);
+      }
+
+      echo json_encode($response);
 		}
 	}
 	

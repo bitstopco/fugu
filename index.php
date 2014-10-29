@@ -124,22 +124,19 @@
   			$email = $_POST['email'];
   			$password = $_POST['password'];
 
-  			//$url = 'http://api.l3t.in/v1/atm/coinbase/newuser';
-				//$data = array('email' => $email, 'password' => $password);
-				//$options = array(
-				//  'http' => array(
-				//    'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
-				//    'method'  => 'POST',
-				//    'content' => http_build_query($data),
-				//  ),
-				//);
-				//$context  = stream_context_create($options);
-				//$result = file_get_contents($url, false, $context);
+  			$url = 'http://api.l3t.in/v1/atm/coinbase/newuser';
+				$data = array('email' => $email, 'password' => $password);
+				$options = array(
+				  'http' => array(
+				    'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+				    'method'  => 'POST',
+				    'content' => http_build_query($data),
+				  ),
+				);
+				$context  = stream_context_create($options);
+				$result = file_get_contents($url, false, $context);
 
-				//$result = json_decode($result, TRUE);
-
-  			$result['status'] = '200';
-  			$result['data']['address'] = '1AcMHnwRGg2JXiy4Y75QcisGUDpCePejAx';
+				$result = json_decode($result, TRUE);
 
 				if ($result['status'] == '200') {
 					$dbh = new PDO('sqlite:coinbase.sqlite');

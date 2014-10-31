@@ -55,6 +55,10 @@
 			try {
 				$phone = $_GET['phone'];
 				$db = new PDO('sqlite:phone.sqlite');
+
+				$delete = $db->prepare("DELETE FROM customer"); 
+				$delete->execute();
+				
 				$db->exec("CREATE TABLE customer (Id INTEGER PRIMARY KEY, phone TEXT)");   
 				$db->exec("INSERT INTO customer (phone) VALUES ($phone);");
 				$status = '200';
@@ -142,6 +146,9 @@
 					$dbh = new PDO('sqlite:coinbase.sqlite');
 					$status = '200';
 					$address = $result['data']['address'];
+
+					$delete = $dbh->prepare("DELETE FROM account"); 
+					$delete->execute();
 
 					$dbh->exec("CREATE TABLE account (Id INTEGER PRIMARY KEY, address TEXT)");   
 					$stmt = $dbh->prepare("INSERT INTO account (address) VALUES (?)");

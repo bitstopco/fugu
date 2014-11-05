@@ -56,6 +56,8 @@
 				$phone = $_GET['phone'];
 				$db = new PDO('sqlite:phone.sqlite');
 
+				$db->exec("CREATE TABLE customer (Id INTEGER PRIMARY KEY, phone TEXT)"); 
+
 				$delete = $db->prepare("DELETE FROM customer"); 
 				$delete->execute();
 				
@@ -147,6 +149,8 @@
 					$status = '200';
 					$address = $result['data']['address'];
 
+					$dbh->exec("CREATE TABLE account (Id INTEGER PRIMARY KEY, address TEXT)");   
+
 					$delete = $dbh->prepare("DELETE FROM account"); 
 					$delete->execute();
 
@@ -196,9 +200,9 @@
 
   		try {
   			$dbh = new PDO('sqlite:coinbase.sqlite'); 
-				$stmt = $dbh->prepare("SELECT address FROM account ORDER BY Id DESC LIMIT 1"); 
-				$stmt->execute(); 
-				$row = $stmt->fetch();
+				$sdsdsdd = $dbh->prepare("SELECT address FROM account ORDER BY Id DESC LIMIT 1"); 
+				$sdsdsdd->execute(); 
+				$row = $sdsdsdd->fetch();
 
 				$status = '200';
 				$address = $row['address'];

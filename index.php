@@ -22,6 +22,13 @@
 
     });
 
+    $app->group('/license', function () use ($app) {
+      
+      $app->get('/create', 'LICENSE:create');
+      $app->get('/recover', 'LICENSE:recover');
+
+    });
+
     $app->group('/coinbase', function () use ($app) {
 
     	$app->post('/create', 'COINBASE:create');
@@ -110,7 +117,76 @@
 
 		}
 
-	}  	
+	} 
+
+  class LICENSE
+  {
+    
+    function create()
+    {
+
+      header('Access-Control-Allow-Origin: *');
+      header('Content-type: application/json;');
+
+      try {
+        $license = $_GET['license'];
+        $db = new PDO('sqlite:license.sqlite');
+
+        $db->exec("CREATE TABLE customer (Id INTEGER PRIMARY KEY, license TEXT)"); 
+
+        $delete = $db->prepare("DELETE FROM customer"); 
+        $delete->execute();
+        
+        $db->exec("CREATE TABLE customer (Id INTEGER PRIMARY KEY, license TEXT)");   
+        $db->exec("INSERT INTO customer (license) VALUES ($license);");
+        $status = '200';
+      } catch(PDOException $e) {
+        $status = '500';
+        print 'Exception : '.$e->getMessage();
+      }
+
+      $response = array(
+        'status' => $status
+      );
+
+      echo json_encode($response);
+
+    }
+
+    function recover()
+    {
+
+      header('Access-Control-Allow-Origin: *');
+      header('Content-type: application/json;');
+      
+      try {
+
+        $dbh = new PDO('sqlite:license.sqlite'); 
+        $stmt = $dbh->prepare("SELECT license FROM customer ORDER BY Id DESC LIMIT 1"); 
+        $stmt->execute(); 
+        $row = $stmt->fetch();
+
+        $status = '200';
+        $license = $row['license'];
+
+        $delete = $dbh->prepare("DELETE FROM customer"); 
+        $delete->execute(); 
+        
+      } catch (PDOException $e) {
+        $status = '500';
+        print 'Exception : '.$e->getMessage();
+      }
+
+      $response = array(
+        'status' => $status,
+        'license' => $license
+      );
+
+      echo json_encode($response);
+
+    }
+
+  }  	
 
 
 	/**

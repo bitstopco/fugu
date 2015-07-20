@@ -1,5 +1,6 @@
 vendor
 phone.sqlite
 address.sqlite
+license.sqlite
 
 coinbase.sqlite

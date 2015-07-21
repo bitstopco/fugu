@@ -15,11 +15,14 @@
 
   $app->group('/api', function () use ($app) {
 
-    $app->group('/phone', function () use ($app) {
-    	
-    	$app->get('/create', 'PHONE:create');
-    	$app->get('/recover', 'PHONE:recover');
+    $app->group('/state', function () use ($app) {
+    	$app->get('/create', 'STATE:create');
+    	$app->get('/recover', 'STATE:recover');
+    });
 
+    $app->group('/phone', function () use ($app) {
+      $app->get('/create', 'PHONE:create');
+      $app->get('/recover', 'PHONE:recover');
     });
 
     $app->group('/license', function () use ($app) {
@@ -50,6 +53,80 @@
   /**
   * ATM
   */
+  class STATE
+  {
+    
+    function create()
+    {
+
+      header('Access-Control-Allow-Origin: *');
+      header('Content-type: application/json;');
+
+      try {
+        $db = new PDO('sqlite:state.sqlite');
+       
+        $db->exec("CREATE TABLE state (Id INTEGER PRIMARY KEY, sessionID TEXT, fingerPrint TEXT)"); 
+
+        $delete = $db->prepare("DELETE FROM state"); 
+        $delete->execute();  
+         
+        $db->exec("CREATE TABLE state (Id INTEGER PRIMARY KEY, sessionID TEXT, fingerPrint TEXT)"); 
+
+        $db->exec("INSERT INTO state (sessionID, fingerPrint) VALUES ('".$_GET['sessionID']."', '".$_GET['fingerPrint']."');");
+        
+        $status = '200';
+         
+        // close the database connection
+        $db = NULL; 
+      } catch(PDOException $e) {
+        $status = '500';
+        print 'Exception : '.$e->getMessage();
+      }
+
+      $response = array(
+        'status' => $status
+      );
+
+      echo json_encode($response);
+    }
+
+    function recover()
+    {
+
+      header('Access-Control-Allow-Origin: *');
+      header('Content-type: application/json;');
+      
+      try {
+        $dbh = new PDO('sqlite:state.sqlite'); 
+
+        $stmt = $dbh->prepare("SELECT * FROM state ORDER BY Id DESC LIMIT 1"); 
+        $stmt->execute(); 
+        $row = $stmt->fetch();
+
+        $status = '200';
+        $sessionID = $row['sessionID'];
+        $fingerPrint = $row['fingerPrint'];
+
+        $delete = $dbh->prepare("DELETE FROM state"); 
+        $delete->execute(); 
+        
+      } catch (PDOException $e) {
+        $status = '500';
+        print 'Exception : '.$e->getMessage();
+      }
+
+      $response = array(
+        'status' => $status,
+        'sessionID' => $sessionID,
+        'fingerPrint' => $fingerPrint
+      );
+
+      echo json_encode($response);
+
+    }
+  }
+
+
 	class PHONE
 	{
 		
@@ -138,7 +215,7 @@
         $delete->execute();
         
         $db->exec("CREATE TABLE customer (Id INTEGER PRIMARY KEY, license TEXT)");   
-        $db->exec("INSERT INTO customer (license) VALUES ($license);");
+        $db->exec("INSERT INTO customer (license) VALUES ($license)");
         $status = '200';
       } catch(PDOException $e) {
         $status = '500';

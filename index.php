@@ -57,7 +57,7 @@
 
       try {
 
-        $json = array('licenseId' => 'alla');
+        $json = array('licenseId' => $_GET['licenseId']);
 
         $file = fopen('data.json','w');
         fwrite($file, json_encode($json));

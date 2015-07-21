@@ -89,7 +89,7 @@
     </object>
     <object type="LMREQUEST" id="z106">
         <attribute name="uuid" type="string">968975F8-57C1-4C84-B0FB-6768706C637D</attribute>
-        <attribute name="url" type="string">http://localhost:8000/api/state/create?sessionID=sessionID\u2600fingerPrint=fingerPrint</attribute>
+        <attribute name="url" type="string">http://localhost:8000/api/state/create?sessionID=sessionID\u2600licenseId=licenseId</attribute>
         <attribute name="storecookies" type="bool">1</attribute>
         <attribute name="sendcookies" type="bool">1</attribute>
         <attribute name="redirectmethod" type="bool">0</attribute>
@@ -101,7 +101,7 @@
         <attribute name="name" type="string">state/create</attribute>
         <relationship name="parent" type="0/1" destination="LMREQUESTTREEITEM"></relationship>
         <relationship name="children" type="0/0" destination="LMREQUESTTREEITEM"></relationship>
-        <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z107 z105"></relationship>
+        <relationship name="headers" type="0/0" destination="LMKEYVALUE" idrefs="z105 z107"></relationship>
     </object>
     <object type="LMKEYVALUE" id="z107">
         <attribute name="value" type="string">application/x-www-form-urlencoded </attribute>

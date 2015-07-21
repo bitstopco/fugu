@@ -25,13 +25,6 @@
       $app->get('/recover', 'PHONE:recover');
     });
 
-    $app->group('/license', function () use ($app) {
-      
-      $app->get('/create', 'LICENSE:create');
-      $app->get('/recover', 'LICENSE:recover');
-
-    });
-
     $app->group('/coinbase', function () use ($app) {
 
     	$app->post('/create', 'COINBASE:create');
@@ -65,14 +58,14 @@
       try {
         $db = new PDO('sqlite:state.sqlite');
        
-        $db->exec("CREATE TABLE state (Id INTEGER PRIMARY KEY, sessionID TEXT, fingerPrint TEXT)"); 
+        $db->exec("CREATE TABLE state (Id INTEGER PRIMARY KEY, sessionID TEXT, licenseId TEXT)"); 
 
         $delete = $db->prepare("DELETE FROM state"); 
         $delete->execute();  
          
-        $db->exec("CREATE TABLE state (Id INTEGER PRIMARY KEY, sessionID TEXT, fingerPrint TEXT)"); 
+        $db->exec("CREATE TABLE state (Id INTEGER PRIMARY KEY, sessionID TEXT, licenseId TEXT)"); 
 
-        $db->exec("INSERT INTO state (sessionID, fingerPrint) VALUES ('".$_GET['sessionID']."', '".$_GET['fingerPrint']."');");
+        $db->exec("INSERT INTO state (sessionID, licenseId) VALUES ('".$_GET['sessionID']."', '".$_GET['licenseId']."');");
         
         $status = '200';
          
@@ -105,7 +98,7 @@
 
         $status = '200';
         $sessionID = $row['sessionID'];
-        $fingerPrint = $row['fingerPrint'];
+        $licenseId = $row['licenseId'];
 
         $delete = $dbh->prepare("DELETE FROM state"); 
         $delete->execute(); 
@@ -118,7 +111,7 @@
       $response = array(
         'status' => $status,
         'sessionID' => $sessionID,
-        'fingerPrint' => $fingerPrint
+        'licenseId' => $licenseId
       );
 
       echo json_encode($response);
@@ -195,76 +188,6 @@
 		}
 
 	} 
-
-  class LICENSE
-  {
-    
-    function create()
-    {
-
-      header('Access-Control-Allow-Origin: *');
-      header('Content-type: application/json;');
-
-      try {
-        $license = $_GET['license'];
-        $db = new PDO('sqlite:license.sqlite');
-
-        $db->exec("CREATE TABLE customer (Id INTEGER PRIMARY KEY, license TEXT)"); 
-
-        $delete = $db->prepare("DELETE FROM customer"); 
-        $delete->execute();
-        
-        $db->exec("CREATE TABLE customer (Id INTEGER PRIMARY KEY, license TEXT)");   
-        $db->exec("INSERT INTO customer (license) VALUES ($license)");
-        $status = '200';
-      } catch(PDOException $e) {
-        $status = '500';
-        print 'Exception : '.$e->getMessage();
-      }
-
-      $response = array(
-        'status' => $status
-      );
-
-      echo json_encode($response);
-
-    }
-
-    function recover()
-    {
-
-      header('Access-Control-Allow-Origin: *');
-      header('Content-type: application/json;');
-      
-      try {
-
-        $dbh = new PDO('sqlite:license.sqlite'); 
-        $stmt = $dbh->prepare("SELECT license FROM customer ORDER BY Id DESC LIMIT 1"); 
-        $stmt->execute(); 
-        $row = $stmt->fetch();
-
-        $status = '200';
-        $license = $row['license'];
-
-        $delete = $dbh->prepare("DELETE FROM customer"); 
-        $delete->execute(); 
-        
-      } catch (PDOException $e) {
-        $status = '500';
-        print 'Exception : '.$e->getMessage();
-      }
-
-      $response = array(
-        'status' => $status,
-        'license' => $license
-      );
-
-      echo json_encode($response);
-
-    }
-
-  }  	
-
 
 	/**
 	* COINBASE

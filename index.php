@@ -56,21 +56,15 @@
       header('Content-type: application/json;');
 
       try {
-        $db = new PDO('sqlite:state.sqlite');
-       
-        $db->exec("CREATE TABLE state (Id INTEGER PRIMARY KEY, sessionID TEXT, licenseId TEXT)"); 
 
-        $delete = $db->prepare("DELETE FROM state"); 
-        $delete->execute();  
-         
-        $db->exec("CREATE TABLE state (Id INTEGER PRIMARY KEY, sessionID TEXT, licenseId TEXT)"); 
+        $json = array('sessionID' => 'qui', 'licenseId' => 'alla');
 
-        $db->exec("INSERT INTO state (sessionID, licenseId) VALUES ('".$_GET['sessionID']."', '".$_GET['licenseId']."');");
-        
+        $file = fopen('data.json','w');
+        fwrite($file, json_encode($json));
+        fclose($file);
+
         $status = '200';
          
-        // close the database connection
-        $db = NULL; 
       } catch(PDOException $e) {
         $status = '500';
         print 'Exception : '.$e->getMessage();
@@ -90,19 +84,9 @@
       header('Content-type: application/json;');
       
       try {
-        $dbh = new PDO('sqlite:state.sqlite'); 
-
-        $stmt = $dbh->prepare("SELECT * FROM state ORDER BY Id DESC LIMIT 1"); 
-        $stmt->execute(); 
-        $row = $stmt->fetch();
-
+        $string = file_get_contents("data.json");
+        $json_a = json_decode($string, true);
         $status = '200';
-        $sessionID = $row['sessionID'];
-        $licenseId = $row['licenseId'];
-
-        $delete = $dbh->prepare("DELETE FROM state"); 
-        $delete->execute(); 
-        
       } catch (PDOException $e) {
         $status = '500';
         print 'Exception : '.$e->getMessage();
@@ -110,8 +94,7 @@
 
       $response = array(
         'status' => $status,
-        'sessionID' => $sessionID,
-        'licenseId' => $licenseId
+        'data' => $json_a
       );
 
       echo json_encode($response);

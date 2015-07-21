@@ -57,7 +57,7 @@
 
       try {
 
-        $json = array('sessionID' => 'qui', 'licenseId' => 'alla');
+        $json = array('licenseId' => 'alla');
 
         $file = fopen('data.json','w');
         fwrite($file, json_encode($json));

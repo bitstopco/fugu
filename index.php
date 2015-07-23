@@ -57,7 +57,7 @@
 
       try {
 
-        $json = array('licenseId' => $_GET['licenseId']);
+        $json = array('licenseId' => $_GET['licenseId'], 'session_id' => $_GET['sessionId']);
 
         $file = fopen('data.json','w');
         fwrite($file, json_encode($json));
